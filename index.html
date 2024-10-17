@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>상식 퀴즈 게임</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    #quiz-container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      display: inline-block;
+      width: 100%;
+      max-width: 400px;
+    }
+    .question {
+      margin-bottom: 20px;
+      font-size: 18px;
+      text-align: left;
+    }
+    input[type="radio"] {
+      margin-right: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+      color: #333;
+    }
+    .correct {
+      color: green;
+    }
+    .incorrect {
+      color: red;
+    }
+    #score {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div id="quiz-container">
+    <h1>상식 퀴즈 게임</h1>
+    <div id="quiz">
+      <!-- 질문과 답변 -->
+    </div>
+    <button id="submit-btn">제출</button>
+    <p id="result"></p>
+    <p id="score"></p>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "대한민국의 수도는?",
+        options: ["서울", "부산", "대구", "인천"],
+        correct: "서울"
+      },
+      {
+        question: "세계에서 가장 큰 대륙은?",
+        options: ["아시아", "아프리카", "유럽", "북아메리카"],
+        correct: "아시아"
+      },
+      {
+        question: "빛의 속도는 얼마인가?",
+        options: ["약 300,000 km/s", "약 150,000 km/s", "약 500,000 km/s", "약 100,000 km/s"],
+        correct: "약 300,000 km/s"
+      },
+      {
+        question: "물의 화학식은?",
+        options: ["H2O", "CO2", "O2", "NaCl"],
+        correct: "H2O"
+      },
+      {
+        question: "지구의 위성은?",
+        options: ["달", "화성", "목성", "금성"],
+        correct: "달"
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    const quizContainer = document.getElementById('quiz');
+    const resultContainer = document.getElementById('result');
+    const scoreContainer = document.getElementById('score');
+    const submitButton = document.getElementById('submit-btn');
+
+    function loadQuestion() {
+      const quizItem = quizData[currentQuestionIndex];
+      quizContainer.innerHTML = ''; // 이전 질문 제거
+      resultContainer.textContent = ''; // 이전 결과 제거
+
+      const questionElement = document.createElement('div');
+      questionElement.classList.add('question');
+      
+      const questionText = document.createElement('p');
+      questionText.textContent = `${currentQuestionIndex + 1}. ${quizItem.question}`;
+      questionElement.appendChild(questionText);
+
+      quizItem.options.forEach(option => {
+        const label = document.createElement('label');
+        const radioInput = document.createElement('input');
+        radioInput.type = 'radio';
+        radioInput.name = `question${currentQuestionIndex}`;
+        radioInput.value = option;
+
+        label.appendChild(radioInput);
+        label.appendChild(document.createTextNode(option));
+
+        questionElement.appendChild(label);
+        questionElement.appendChild(document.createElement('br'));
+      });
+
+      quizContainer.appendChild(questionElement);
+    }
+
+    submitButton.addEventListener('click', function() {
+      const selectedOption = document.querySelector(`input[name="question${currentQuestionIndex}"]:checked`);
+      if (!selectedOption) {
+        resultContainer.textContent = '답을 선택하세요.';
+        return;
+      }
+
+      const isCorrect = selectedOption.value === quizData[currentQuestionIndex].correct;
+      if (isCorrect) {
+        resultContainer.textContent = '정답입니다!';
+        resultContainer.classList.add('correct');
+        resultContainer.classList.remove('incorrect');
+        score++;
+      } else {
+        resultContainer.textContent = `오답입니다! 정답은 '${quizData[currentQuestionIndex].correct}'입니다.`;
+        resultContainer.classList.add('incorrect');
+        resultContainer.classList.remove('correct');
+      }
+
+      currentQuestionIndex++;
+
+      if (currentQuestionIndex < quizData.length) {
+        setTimeout(loadQuestion, 2000); // 2초 후에 다음 질문으로 넘어가기
+      } else {
+        setTimeout(showFinalScore, 2000); // 모든 질문이 끝나면 점수 표시
+      }
+    });
+
+    function showFinalScore() {
+      quizContainer.innerHTML = ''; // 퀴즈 내용을 지우고
+      submitButton.style.display = 'none'; // 제출 버튼 숨김
+      scoreContainer.textContent = `퀴즈 완료! 당신의 점수는 ${score} / ${quizData.length} 입니다.`;
+    }
+
+    // 처음 퀴즈 로드
+    loadQuestion();
+  </script>
+</body>
+</html>
+
